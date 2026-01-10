@@ -1,52 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gilbert Seb | Cybersecurity Engineer</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="script.js"></script>
 </head>
 <body>
-  <header>
-    <h1>Gilbert Seb</h1>
-    <p>M.Tech – Cyber Forensics & Information Security</p>
-    <p>
-      <a href="mailto:yourmail@example.com">Email</a> |
-      <a href="https://github.com/yourusername">GitHub</a> |
-      <a href="https://linkedin.com/in/yourprofile">LinkedIn</a>
-    </p>
+  <header class="navbar">
+    <h1 class="logo">Gilbert Seb</h1>
+    <button id="theme-toggle" aria-label="Toggle theme">🌙</button>
   </header>
 
-  <section>
-    <h2>About Me</h2>
-    <p>
-      Cybersecurity postgraduate specializing in vulnerability assessment,
-      malware analysis, and secure system design.
-    </p>
-  </section>
+  <main>
+    <section class="hero fade-in">
+      <h2>Cybersecurity Engineer</h2>
+      <p>M.Tech – Cyber Forensics & Information Security</p>
+      <div class="links">
+        <a href="mailto:yourmail@example.com">Email</a>
+        <a href="https://github.com/yourusername" target="_blank">GitHub</a>
+        <a href="https://linkedin.com/in/yourprofile" target="_blank">LinkedIn</a>
+      </div>
+    </section>
 
-  <section>
-    <h2>Skills</h2>
-    <ul>
-      <li>Vulnerability Assessment & Penetration Testing</li>
-      <li>Malware Analysis (Static & Dynamic)</li>
-      <li>Linux, Networking, TCP/IP</li>
-      <li>Nmap, Burp Suite, Metasploit</li>
-      <li>Python, Bash</li>
-    </ul>
-  </section>
+    <section class="fade-in">
+      <h2>About Me</h2>
+      <p>
+        Cybersecurity postgraduate specializing in vulnerability assessment,
+        malware analysis, and secure system design. Passionate about developing
+        secure applications and protecting digital ecosystems.
+      </p>
+    </section>
 
-  <section>
-    <h2>Projects</h2>
-    <ul>
-      <li><b>AI-Assisted Vulnerability Scanner</b> – Rule-based risk scoring engine</li>
-      <li><b>Malware Behavior Analysis System</b> – Sandbox-based analysis</li>
-    </ul>
-  </section>
+    <section class="fade-in">
+      <h2>Skills</h2>
+      <ul class="skills">
+        <li>Vulnerability Assessment & Penetration Testing</li>
+        <li>Malware Analysis (Static & Dynamic)</li>
+        <li>Linux, Networking, TCP/IP</li>
+        <li>Nmap, Burp Suite, Metasploit</li>
+        <li>Python, Bash</li>
+      </ul>
+    </section>
 
-  <section>
-    <h2>Education</h2>
-    <p>M.Tech – Cyber Forensics & Information Security</p>
-  </section>
+    <section class="fade-in">
+      <h2>Projects</h2>
+      <div class="projects">
+        <article>
+          <h3>AI-Assisted Vulnerability Scanner</h3>
+          <p>Rule-based risk scoring engine leveraging automation and AI.</p>
+        </article>
+        <article>
+          <h3>Malware Behavior Analysis System</h3>
+          <p>Sandbox-based malware behavior and pattern detection system.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="fade-in">
+      <h2>Education</h2>
+      <p>M.Tech – Cyber Forensics & Information Security</p>
+    </section>
+  </main>
 
   <footer>
     <p>© 2026 Gilbert Seb</p>
