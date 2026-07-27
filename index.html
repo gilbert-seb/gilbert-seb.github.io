@@ -4,6 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gilbert Seb · Cybersecurity Engineer</title>
+
+    <!-- ===== THREE.JS & GSAP CDN ===== -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js">
+    </script>
+
     <style>
         /* ----- CSS Variables & Reset ----- */
         :root {
@@ -29,6 +38,8 @@
             --particle-color: rgba(10, 140, 255, 0.5);
             --cursor-color: #0a8cff;
             --cursor-glow: rgba(10, 140, 255, 0.5);
+            --glitch-1: #0a8cff;
+            --glitch-2: #6c3ce0;
         }
 
         [data-theme="dark"] {
@@ -54,6 +65,8 @@
             --particle-color: rgba(56, 189, 248, 0.5);
             --cursor-color: #38bdf8;
             --cursor-glow: rgba(56, 189, 248, 0.5);
+            --glitch-1: #38bdf8;
+            --glitch-2: #a78bfa;
         }
 
         *,
@@ -302,6 +315,27 @@
             }
         }
 
+        /* ====================================================
+           THREE.JS 3D SCENE
+        ==================================================== */
+        #three-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        #three-container canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* ====================================================
+           HERO FLOATING PARTICLES (canvas overlay)
+        ==================================================== */
         #hero-canvas {
             position: absolute;
             inset: 0;
@@ -310,6 +344,9 @@
             opacity: 0.45;
         }
 
+        /* ====================================================
+           GLITCH TEXT (enhanced)
+        ==================================================== */
         .glitch {
             position: relative;
             display: inline-block;
@@ -350,7 +387,7 @@
             pointer-events: none;
         }
         .glitch:hover::before {
-            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+            background: linear-gradient(135deg, var(--glitch-1), var(--glitch-2));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -360,7 +397,7 @@
             animation: glitch-clip1 0.5s linear forwards;
         }
         .glitch:hover::after {
-            background: linear-gradient(135deg, var(--gradient-2), var(--gradient-1));
+            background: linear-gradient(135deg, var(--glitch-2), var(--glitch-1));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -388,6 +425,7 @@
             }
         }
 
+        /* ---- Scan-line overlay on cards ---- */
         .project-card::after {
             content: '';
             position: absolute;
@@ -431,6 +469,9 @@
             padding: 0 24px;
         }
 
+        /* ====================================================
+           NAVBAR
+        ==================================================== */
         .navbar {
             position: fixed;
             top: 0;
@@ -538,6 +579,9 @@
             box-shadow: 0 0 20px var(--accent-glow);
         }
 
+        /* ====================================================
+           HERO
+        ==================================================== */
         .hero {
             min-height: 100vh;
             display: flex;
@@ -546,6 +590,7 @@
             padding: 120px 0 60px;
             position: relative;
             overflow: hidden;
+            z-index: 1;
         }
         .hero::before {
             content: '';
@@ -559,7 +604,7 @@
         }
         .hero .container {
             position: relative;
-            z-index: 1;
+            z-index: 2;
         }
 
         .hero-badge {
@@ -712,9 +757,13 @@
             flex-shrink: 0;
         }
 
+        /* ====================================================
+           SECTIONS
+        ==================================================== */
         section {
             padding: 5rem 0;
             position: relative;
+            z-index: 1;
         }
 
         .section-label {
@@ -751,6 +800,9 @@
             font-size: 1.05rem;
         }
 
+        /* ====================================================
+           ABOUT
+        ==================================================== */
         .about-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -829,6 +881,9 @@
             }
         }
 
+        /* ====================================================
+           SKILLS
+        ==================================================== */
         .skills-wrapper {
             display: flex;
             flex-wrap: wrap;
@@ -875,6 +930,9 @@
             opacity: 1;
         }
 
+        /* ====================================================
+           PROJECTS
+        ==================================================== */
         .projects-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -960,6 +1018,9 @@
             font-weight: 500;
         }
 
+        /* ====================================================
+           TERMINAL LINE
+        ==================================================== */
         .terminal-line {
             font-family: 'Fira Code', monospace;
             font-size: 0.8rem;
@@ -976,6 +1037,9 @@
             color: var(--accent);
         }
 
+        /* ====================================================
+           EDUCATION
+        ==================================================== */
         .edu-card {
             background: var(--bg-card);
             border-radius: 20px;
@@ -1004,12 +1068,17 @@
             color: var(--text-secondary);
         }
 
+        /* ====================================================
+           FOOTER
+        ==================================================== */
         footer {
             padding: 2.5rem 0;
             border-top: 1px solid var(--border);
             text-align: center;
             color: var(--text-muted);
             font-size: 0.9rem;
+            position: relative;
+            z-index: 1;
         }
         footer .heart {
             color: #ef4444;
@@ -1035,6 +1104,9 @@
             }
         }
 
+        /* ====================================================
+           FADE-UP
+        ==================================================== */
         .fade-up {
             opacity: 0;
             transform: translateY(40px);
@@ -1045,6 +1117,9 @@
             transform: translateY(0);
         }
 
+        /* ====================================================
+           CLICK HINT
+        ==================================================== */
         .click-hint {
             position: fixed;
             bottom: 2rem;
@@ -1069,6 +1144,9 @@
             display: none;
         }
 
+        /* ====================================================
+           RESPONSIVE
+        ==================================================== */
         @media(max-width:768px) {
             .hero {
                 padding: 100px 0 40px;
@@ -1130,16 +1208,19 @@
         <div class="cursor-dot"></div>
     </div>
 
-    <!-- ===== Spider Web Canvas (global) ===== -->
+    <!-- ===== THREE.JS 3D SCENE ===== -->
+    <div id="three-container"></div>
+
+    <!-- ===== SPIDER WEB CANVAS ===== -->
     <canvas id="web-canvas"></canvas>
 
-    <!-- ===== Scroll Progress ===== -->
+    <!-- ===== SCROLL PROGRESS ===== -->
     <div id="scroll-progress"></div>
 
-    <!-- Click hint -->
+    <!-- ===== CLICK HINT ===== -->
     <div class="click-hint" id="click-hint">⚡ Click anywhere to cast a web</div>
 
-    <!-- ===== Navigation ===== -->
+    <!-- ===== NAVIGATION ===== -->
     <header class="navbar">
         <div class="container">
             <a href="#" class="logo glitch" data-text="&lt;GilbertSeb /&gt;">&lt;GilbertSeb /&gt;</a>
@@ -1149,10 +1230,10 @@
         </div>
     </header>
 
-    <!-- ===== Main ===== -->
+    <!-- ===== MAIN ===== -->
     <main>
 
-        <!-- ===== Hero ===== -->
+        <!-- ===== HERO ===== -->
         <section class="hero" id="home">
             <canvas id="hero-canvas"></canvas>
             <div class="container">
@@ -1189,7 +1270,7 @@
             </div>
         </section>
 
-        <!-- ===== About ===== -->
+        <!-- ===== ABOUT ===== -->
         <section id="about" class="fade-up">
             <div class="container">
                 <div class="terminal-line">
@@ -1225,7 +1306,7 @@
             </div>
         </section>
 
-        <!-- ===== Skills ===== -->
+        <!-- ===== SKILLS ===== -->
         <section id="skills" class="fade-up">
             <div class="container">
                 <div class="terminal-line">
@@ -1254,7 +1335,7 @@
             </div>
         </section>
 
-        <!-- ===== Projects ===== -->
+        <!-- ===== PROJECTS ===== -->
         <section id="projects" class="fade-up">
             <div class="container">
                 <div class="terminal-line">
@@ -1293,7 +1374,7 @@
             </div>
         </section>
 
-        <!-- ===== Education ===== -->
+        <!-- ===== EDUCATION ===== -->
         <section id="education" class="fade-up">
             <div class="container">
                 <div class="terminal-line">
@@ -1310,7 +1391,7 @@
             </div>
         </section>
 
-        <!-- ===== Contact ===== -->
+        <!-- ===== CONTACT ===== -->
         <section id="contact" class="fade-up" style="border-bottom:none;">
             <div class="container" style="text-align:center;">
                 <span class="section-label">Connect</span>
@@ -1341,6 +1422,9 @@
         </div>
     </footer>
 
+    <!-- ============================================================
+    JAVASCRIPT — All logic
+    ============================================================ -->
     <script>
         // ============================================================
         // TOUCH DEVICE DETECTION
@@ -1359,6 +1443,16 @@
         function getAccentRGB() {
             const theme = document.documentElement.getAttribute('data-theme');
             return theme === 'dark' ? [56, 189, 248] : [10, 140, 255];
+        }
+
+        function getAccentColor() {
+            const rgb = getAccentRGB();
+            return `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+        }
+
+        function getAccentGlow() {
+            const rgb = getAccentRGB();
+            return `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.5)`;
         }
 
         // ============================================================
@@ -1413,7 +1507,8 @@
             });
 
             document.addEventListener('click', (e) => {
-                if (e.target.closest('.navbar,.btn,.skill-tag,.project-card,.stat-card,.edu-card,#theme-toggle,.logo,.hero-badge'))
+                if (e.target.closest(
+                        '.navbar,.btn,.skill-tag,.project-card,.stat-card,.edu-card,#theme-toggle,.logo,.hero-badge'))
                     return;
                 const burst = document.createElement('div');
                 burst.className = 'cursor-click-burst';
@@ -1438,7 +1533,7 @@
             updateCursorColors();
         }
 
-        // inject cursor-burst keyframes if not present
+        // inject cursor-burst keyframes
         if (!document.getElementById('cursor-burst-style')) {
             const style = document.createElement('style');
             style.id = 'cursor-burst-style';
@@ -1476,6 +1571,8 @@
                 document.documentElement.style.setProperty('--cursor-color', color);
                 document.documentElement.style.setProperty('--cursor-glow', glow);
             }
+            // Update 3D scene colors
+            updateThreeColors();
         });
 
         // ============================================================
@@ -1571,7 +1668,7 @@
         });
 
         // ============================================================
-        // 8. MAGNETIC BUTTONS (desktop only)
+        // 8. MAGNETIC BUTTONS & 3D TILT (desktop only)
         // ============================================================
         if (!isTouch) {
             document.querySelectorAll('.btn-magnetic').forEach(btn => {
@@ -1608,7 +1705,7 @@
         });
 
         // ============================================================
-        // 10. HERO FLOATING PARTICLES (optimized with delta time)
+        // 10. HERO FLOATING PARTICLES (canvas overlay)
         // ============================================================
         (function() {
             const canvas = document.getElementById('hero-canvas');
@@ -1621,7 +1718,6 @@
             window.addEventListener('resize', resize);
             const ctx = canvas.getContext('2d');
 
-            // reduce particle count on mobile for performance
             const particleCount = isTouch ? 30 : 60;
             const pts = Array.from({ length: particleCount }, () => ({
                 x: Math.random() * w,
@@ -1634,12 +1730,10 @@
             let lastTime = performance.now();
 
             function drawHero(now) {
-                const dt = Math.min((now - lastTime) / 16.67, 2); // normalize to ~60fps
+                const dt = Math.min((now - lastTime) / 16.67, 2);
                 lastTime = now;
-
                 ctx.clearRect(0, 0, w, h);
                 const [r, g, b] = getAccentRGB();
-
                 pts.forEach(p => {
                     p.x += p.vx * dt;
                     p.y += p.vy * dt;
@@ -1650,8 +1744,6 @@
                     ctx.fillStyle = `rgba(${r},${g},${b},0.7)`;
                     ctx.fill();
                 });
-
-                // connections
                 for (let i = 0; i < pts.length; i++) {
                     for (let j = i + 1; j < pts.length; j++) {
                         const a = pts[i],
@@ -1673,7 +1765,291 @@
         })();
 
         // ============================================================
-        // 11. SPIDER WEB ENGINE (delta‑time driven for smooth 90fps feel)
+        // 11. THREE.JS 3D SCENE — "Cyber Shield" with Particles
+        // ============================================================
+        let scene, camera, renderer, mainMesh, wireframeMesh, particleSystem;
+        let mouseX = 0,
+            mouseY = 0;
+        let targetRotX = 0,
+            targetRotY = 0;
+        let sceneReady = false;
+
+        function initThree() {
+            const container = document.getElementById('three-container');
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = null; // transparent
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
+            camera.position.set(0, 0, 8);
+            camera.lookAt(0, 0, 0);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({
+                alpha: true,
+                antialias: true,
+                powerPreference: "high-performance"
+            });
+            renderer.setSize(w, h);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setClearColor(0x000000, 0);
+            container.appendChild(renderer.domElement);
+
+            // ---- Lights ----
+            const ambientLight = new THREE.AmbientLight(0x404060, 0.5);
+            scene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+            dirLight.position.set(1, 2, 3);
+            scene.add(dirLight);
+
+            const backLight = new THREE.DirectionalLight(0x8888ff, 0.6);
+            backLight.position.set(-1, -1, -2);
+            scene.add(backLight);
+
+            // ---- Main Geometry: Torus Knot (cyber shield feel) ----
+            const geo = new THREE.TorusKnotGeometry(1.2, 0.45, 128, 16);
+            const mat = new THREE.MeshPhysicalMaterial({
+                color: getAccentColor(),
+                metalness: 0.6,
+                roughness: 0.15,
+                clearcoat: 0.8,
+                clearcoatRoughness: 0.2,
+                emissive: getAccentColor(),
+                emissiveIntensity: 0.12,
+                transparent: true,
+                opacity: 0.92,
+                wireframe: false,
+            });
+            mainMesh = new THREE.Mesh(geo, mat);
+            mainMesh.position.set(0, 0, 0);
+            scene.add(mainMesh);
+
+            // ---- Wireframe overlay ----
+            const wireMat = new THREE.MeshBasicMaterial({
+                color: getAccentColor(),
+                wireframe: true,
+                transparent: true,
+                opacity: 0.25,
+            });
+            const wireGeo = new THREE.TorusKnotGeometry(1.25, 0.48, 96, 12);
+            wireframeMesh = new THREE.Mesh(wireGeo, wireMat);
+            wireframeMesh.position.set(0, 0, 0);
+            scene.add(wireframeMesh);
+
+            // ---- Glow ring (toroidal glow) ----
+            const glowRingGeo = new THREE.TorusGeometry(1.6, 0.04, 32, 64);
+            const glowRingMat = new THREE.MeshBasicMaterial({
+                color: getAccentColor(),
+                transparent: true,
+                opacity: 0.3,
+                blending: THREE.AdditiveBlending,
+            });
+            const glowRing = new THREE.Mesh(glowRingGeo, glowRingMat);
+            glowRing.rotation.x = Math.PI / 2;
+            glowRing.position.set(0, 0, 0);
+            scene.add(glowRing);
+
+            // ---- Particle System (orbiting data points) ----
+            const particleCount = isTouch ? 800 : 1600;
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            const sizes = new Float32Array(particleCount);
+            const velocities = [];
+
+            const accent = getAccentRGB();
+            for (let i = 0; i < particleCount; i++) {
+                const radius = 1.8 + Math.random() * 2.2;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+
+                positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+                positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+                positions[i * 3 + 2] = radius * Math.cos(phi);
+
+                colors[i * 3] = accent[0] / 255 + (Math.random() - 0.5) * 0.2;
+                colors[i * 3 + 1] = accent[1] / 255 + (Math.random() - 0.5) * 0.2;
+                colors[i * 3 + 2] = accent[2] / 255 + (Math.random() - 0.5) * 0.2;
+
+                sizes[i] = 0.02 + Math.random() * 0.06;
+                velocities.push({
+                    theta: (Math.random() - 0.5) * 0.004,
+                    phi: (Math.random() - 0.5) * 0.004,
+                    radius: (Math.random() - 0.5) * 0.002,
+                });
+            }
+
+            const particleGeo = new THREE.BufferGeometry();
+            particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            particleGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            particleGeo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+            const particleMat = new THREE.PointsMaterial({
+                size: 0.045,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false,
+                sizeAttenuation: true,
+            });
+            particleSystem = new THREE.Points(particleGeo, particleMat);
+            scene.add(particleSystem);
+
+            // store velocities for animation
+            particleSystem.userData.velocities = velocities;
+
+            // ---- Mouse tracking ----
+            if (!isTouch) {
+                document.addEventListener('mousemove', (e) => {
+                    mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+                    mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+                });
+            } else {
+                document.addEventListener('touchmove', (e) => {
+                    const t = e.touches[0];
+                    if (t) {
+                        mouseX = (t.clientX / window.innerWidth) * 2 - 1;
+                        mouseY = -(t.clientY / window.innerHeight) * 2 + 1;
+                    }
+                }, { passive: true });
+            }
+
+            // ---- Resize ----
+            window.addEventListener('resize', () => {
+                const w2 = window.innerWidth;
+                const h2 = window.innerHeight;
+                camera.aspect = w2 / h2;
+                camera.updateProjectionMatrix();
+                renderer.setSize(w2, h2);
+            });
+
+            sceneReady = true;
+            animateThree();
+        }
+
+        // ---- Store particles for animation ----
+        let particlePositions, particleColors;
+
+        function animateThree() {
+            if (!sceneReady) return;
+            requestAnimationFrame(animateThree);
+
+            const dt = 1 / 60;
+
+            // Smooth mouse follow
+            targetRotX += (mouseX * 0.3 - targetRotX) * 0.04;
+            targetRotY += (mouseY * 0.2 - targetRotY) * 0.04;
+
+            // Rotate main mesh
+            mainMesh.rotation.x += 0.002 + targetRotY * 0.008;
+            mainMesh.rotation.y += 0.005 + targetRotX * 0.01;
+
+            // Wireframe follows with slight offset
+            wireframeMesh.rotation.x = mainMesh.rotation.x + 0.05;
+            wireframeMesh.rotation.y = mainMesh.rotation.y + 0.08;
+
+            // Glow ring
+            const ring = scene.children.find(c => c.isMesh && c.geometry.type === 'TorusGeometry');
+            if (ring) {
+                ring.rotation.z += 0.003;
+                ring.material.opacity = 0.2 + Math.sin(Date.now() * 0.001) * 0.08;
+            }
+
+            // Update particles (orbit)
+            if (particleSystem) {
+                const pos = particleSystem.geometry.attributes.position.array;
+                const vel = particleSystem.userData.velocities;
+                const count = pos.length / 3;
+
+                for (let i = 0; i < count; i++) {
+                    const idx = i * 3;
+                    const x = pos[idx],
+                        y = pos[idx + 1],
+                        z = pos[idx + 2];
+                    const r = Math.sqrt(x * x + y * y + z * z);
+                    const theta = Math.atan2(y, x);
+                    const phi = Math.acos(z / r);
+
+                    const v = vel[i];
+                    let newTheta = theta + v.theta * dt * 1.5;
+                    let newPhi = phi + v.phi * dt * 1.5;
+                    let newR = r + v.radius * dt * 0.5;
+
+                    // keep in bounds
+                    if (newR < 1.2) { newR = 1.2;
+                        v.radius = Math.abs(v.radius); }
+                    if (newR > 4.5) { newR = 4.5;
+                        v.radius = -Math.abs(v.radius); }
+                    if (newPhi < 0.1) { newPhi = 0.1;
+                        v.phi = Math.abs(v.phi); }
+                    if (newPhi > Math.PI - 0.1) { newPhi = Math.PI - 0.1;
+                        v.phi = -Math.abs(v.phi); }
+
+                    pos[idx] = newR * Math.sin(newPhi) * Math.cos(newTheta);
+                    pos[idx + 1] = newR * Math.sin(newPhi) * Math.sin(newTheta);
+                    pos[idx + 2] = newR * Math.cos(newPhi);
+                }
+                particleSystem.geometry.attributes.position.needsUpdate = true;
+
+                // Pulse particle size
+                const pulse = 0.7 + Math.sin(Date.now() * 0.0008) * 0.3;
+                particleSystem.material.size = 0.035 * pulse;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // ---- Update Three.js colors on theme change ----
+        function updateThreeColors() {
+            if (!sceneReady) return;
+            const color = getAccentColor();
+            const rgb = getAccentRGB();
+
+            // Main mesh
+            if (mainMesh) {
+                mainMesh.material.color.set(color);
+                mainMesh.material.emissive.set(color);
+            }
+
+            // Wireframe
+            if (wireframeMesh) {
+                wireframeMesh.material.color.set(color);
+            }
+
+            // Glow ring
+            const ring = scene.children.find(c => c.isMesh && c.geometry.type === 'TorusGeometry');
+            if (ring) {
+                ring.material.color.set(color);
+            }
+
+            // Particles
+            if (particleSystem) {
+                const colors = particleSystem.geometry.attributes.color.array;
+                const count = colors.length / 3;
+                for (let i = 0; i < count; i++) {
+                    const idx = i * 3;
+                    colors[idx] = rgb[0] / 255 + (Math.random() - 0.5) * 0.15;
+                    colors[idx + 1] = rgb[1] / 255 + (Math.random() - 0.5) * 0.15;
+                    colors[idx + 2] = rgb[2] / 255 + (Math.random() - 0.5) * 0.15;
+                }
+                particleSystem.geometry.attributes.color.needsUpdate = true;
+            }
+        }
+
+        // ---- Init Three.js after DOM load ----
+        if (document.readyState === 'complete') {
+            initThree();
+        } else {
+            window.addEventListener('load', initThree);
+        }
+
+        // ============================================================
+        // 12. SPIDER WEB ENGINE (delta‑time driven)
         // ============================================================
         (function() {
             const canvas = document.getElementById('web-canvas');
@@ -1689,7 +2065,6 @@
             const webs = [];
             const MAX_WEBS = 8;
 
-            // ambient particles - reduce on mobile
             const ambientCount = isTouch ? 30 : 55;
             const ambientNodes = [];
             for (let i = 0; i < ambientCount; i++) {
@@ -1720,7 +2095,6 @@
                 }, { passive: true });
             }
 
-            // ---- WebNode with delta-time progress ----
             class WebNode {
                 constructor(x, y, angle, depth, maxDepth, parent) {
                     this.x0 = parent ? parent.cx : x;
@@ -1730,8 +2104,8 @@
                     this.angle = angle;
                     this.depth = depth;
                     this.maxDepth = maxDepth;
-                    this.progress = 0; // 0→1
-                    this.speed = 0.04 + Math.random() * 0.03; // per frame at 60fps
+                    this.progress = 0;
+                    this.speed = 0.04 + Math.random() * 0.03;
                     this.pulse = 0;
                     this.done = false;
                     this.wx = (Math.random() - .5) * 30;
@@ -1862,7 +2236,6 @@
                 }
             }
 
-            // ---- spawn web ----
             function spawnWeb(x, y) {
                 if (webs.length >= MAX_WEBS) webs.shift();
                 webs.push(new SpiderWeb(x, y));
@@ -1872,7 +2245,6 @@
                 for (let i = 0; i < (isTouch ? 8 : 12); i++) sparks.push(new Spark(x, y));
             }
 
-            // ---- bursts & sparks ----
             const bursts = [];
             class ClickBurst {
                 constructor(x, y) { this.x = x;
@@ -1926,7 +2298,6 @@
                 }
             }
 
-            // ---- TRIGGER: touch → scroll, desktop → click ----
             let scrollCooldown = 0;
 
             function handleScrollTrigger() {
@@ -1972,8 +2343,9 @@
                 document.getElementById('click-hint').classList.add('hidden');
             } else {
                 window.addEventListener('click', (e) => {
-                    if (e.target.closest('.navbar,.btn,.skill-tag,.project-card,.stat-card,.edu-card,#theme-toggle,.logo,.hero-badge'))
-                        return;
+                    if (e.target.closest(
+                            '.navbar,.btn,.skill-tag,.project-card,.stat-card,.edu-card,#theme-toggle,.logo,.hero-badge'
+                            )) return;
                     document.getElementById('click-hint').classList.add('hidden');
                     spawnWeb(e.clientX, e.clientY);
                 });
@@ -1993,17 +2365,15 @@
                 }, 800);
             }
 
-            // ---- render loop with delta time ----
             let lastFrameTime = performance.now();
 
             function render(now) {
-                const dt = Math.min((now - lastFrameTime) / 16.67, 2); // normalize
+                const dt = Math.min((now - lastFrameTime) / 16.67, 2);
                 lastFrameTime = now;
 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 const rgb = getAccentRGB();
 
-                // ambient nodes
                 ambientNodes.forEach(p => {
                     p.x += p.vx * dt;
                     p.y += p.vy * dt;
@@ -2024,7 +2394,6 @@
                     ctx.fill();
                 });
 
-                // ambient connections
                 for (let i = 0; i < ambientNodes.length; i++) {
                     for (let j = i + 1; j < ambientNodes.length; j++) {
                         const a = ambientNodes[i],
@@ -2041,21 +2410,18 @@
                     }
                 }
 
-                // webs
                 for (let i = webs.length - 1; i >= 0; i--) {
                     webs[i].update(dt);
                     webs[i].draw(ctx, rgb);
                     if (!webs[i].alive) webs.splice(i, 1);
                 }
 
-                // bursts
                 for (let i = bursts.length - 1; i >= 0; i--) {
                     bursts[i].update(dt);
                     bursts[i].draw(ctx, rgb);
                     if (!bursts[i].alive) bursts.splice(i, 1);
                 }
 
-                // sparks
                 for (let i = sparks.length - 1; i >= 0; i--) {
                     sparks[i].update(dt);
                     sparks[i].draw(ctx, rgb);
@@ -2072,7 +2438,7 @@
         })();
 
         // ============================================================
-        // 12. SKILL TAG CLICK → mini burst
+        // 13. SKILL TAG CLICK → mini burst
         // ============================================================
         document.querySelectorAll('.skill-tag').forEach(tag => {
             tag.addEventListener('click', function(e) {
@@ -2086,12 +2452,102 @@
             });
         });
 
+        // ============================================================
+        // 14. GSAP SCROLL-TRIGGERED ANIMATIONS
+        // ============================================================
+        if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Animate stats on scroll
+            document.querySelectorAll('.stat-card').forEach((card, i) => {
+                gsap.from(card, {
+                    scrollTrigger: {
+                        trigger: card,
+                        start: 'top 85%',
+                        toggleActions: 'play none none none',
+                    },
+                    opacity: 0,
+                    y: 40,
+                    duration: 0.8,
+                    delay: i * 0.1,
+                    ease: 'power3.out',
+                });
+            });
+
+            // Animate project cards
+            document.querySelectorAll('.project-card').forEach((card, i) => {
+                gsap.from(card, {
+                    scrollTrigger: {
+                        trigger: card,
+                        start: 'top 88%',
+                        toggleActions: 'play none none none',
+                    },
+                    opacity: 0,
+                    y: 50,
+                    duration: 0.9,
+                    delay: i * 0.12,
+                    ease: 'power3.out',
+                });
+            });
+
+            // Animate skill tags
+            const skillTags = document.querySelectorAll('.skill-tag');
+            gsap.from(skillTags, {
+                scrollTrigger: {
+                    trigger: '.skills-wrapper',
+                    start: 'top 85%',
+                    toggleActions: 'play none none none',
+                },
+                opacity: 0,
+                scale: 0.8,
+                duration: 0.6,
+                stagger: 0.04,
+                ease: 'back.out(1.7)',
+            });
+
+            // Animate education card
+            gsap.from('.edu-card', {
+                scrollTrigger: {
+                    trigger: '.edu-card',
+                    start: 'top 88%',
+                    toggleActions: 'play none none none',
+                },
+                opacity: 0,
+                x: -30,
+                duration: 0.9,
+                ease: 'power3.out',
+            });
+
+            // Animate contact section
+            gsap.from('#contact .btn-group', {
+                scrollTrigger: {
+                    trigger: '#contact',
+                    start: 'top 85%',
+                    toggleActions: 'play none none none',
+                },
+                opacity: 0,
+                y: 30,
+                duration: 0.8,
+                delay: 0.2,
+                ease: 'power3.out',
+            });
+
+            console.log('✅ GSAP ScrollTrigger animations active');
+        } else {
+            console.log('⚠️ GSAP/ScrollTrigger not loaded, falling back to IntersectionObserver');
+        }
+
+        // ============================================================
+        // CONSOLE
+        // ============================================================
         console.log('%c🔒 Gilbert Seb · Cybersecurity Portfolio', 'color:#38bdf8;font-family:monospace;font-size:14px;font-weight:bold');
+        console.log('%c🚀 Features: Three.js 3D · Particles · Spider Web · GSAP · Glitch · Custom Cursor',
+            'color:#a78bfa;font-family:monospace;font-size:11px');
         if (isTouch) {
-            console.log('%c📱 Touch device · Spider webs appear on scroll & tap (smooth 90fps)',
+            console.log('%c📱 Touch device · Spider webs appear on scroll & tap',
                 'color:#22c55e;font-family:monospace;font-size:11px');
         } else {
-            console.log('%c🖱️ Desktop · Click or scroll to cast spider webs (smooth 90fps)',
+            console.log('%c🖱️ Desktop · Click or scroll to cast spider webs',
                 'color:#22c55e;font-family:monospace;font-size:11px');
         }
     </script>
