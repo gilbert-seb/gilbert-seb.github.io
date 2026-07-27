@@ -4,12 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gilbert Seb · Cybersecurity Engineer</title>
-
-    <!-- ===== CSS ===== -->
     <style>
         /* ----- CSS Variables & Reset ----- */
         :root {
-            /* Light Mode */
             --bg-primary: #f0f4f8;
             --bg-secondary: #ffffff;
             --bg-card: #ffffff;
@@ -25,8 +22,13 @@
             --glass-border: rgba(255, 255, 255, 0.3);
             --gradient-1: #0a8cff;
             --gradient-2: #6c3ce0;
-            --nav-bg: rgba(240, 244, 248, 0.8);
+            --nav-bg: rgba(240, 244, 248, 0.85);
             --code-bg: #eef2f6;
+            --web-color: rgba(10, 140, 255, 0.6);
+            --web-node-color: #0a8cff;
+            --particle-color: rgba(10, 140, 255, 0.5);
+            --cursor-color: #0a8cff;
+            --cursor-glow: rgba(10, 140, 255, 0.5);
         }
 
         [data-theme="dark"] {
@@ -45,18 +47,20 @@
             --glass-border: rgba(255, 255, 255, 0.08);
             --gradient-1: #38bdf8;
             --gradient-2: #a78bfa;
-            --nav-bg: rgba(10, 14, 26, 0.85);
+            --nav-bg: rgba(10, 14, 26, 0.9);
             --code-bg: #1a2332;
+            --web-color: rgba(56, 189, 248, 0.55);
+            --web-node-color: #38bdf8;
+            --particle-color: rgba(56, 189, 248, 0.5);
+            --cursor-color: #38bdf8;
+            --cursor-glow: rgba(56, 189, 248, 0.5);
         }
 
-        *,
-        *::before,
-        *::after {
+        *, *::before, *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         html {
             scroll-behavior: smooth;
         }
@@ -68,6 +72,367 @@
             line-height: 1.7;
             overflow-x: hidden;
             transition: background 0.4s ease, color 0.4s ease;
+            cursor: none;
+        }
+
+        /* ====================================================
+           CUSTOM CYBER CURSOR
+        ==================================================== */
+        #custom-cursor {
+            position: fixed;
+            pointer-events: none;
+            z-index: 10000;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            will-change: transform;
+            transition: opacity 0.3s ease;
+        }
+
+        .cursor-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1.8px solid var(--cursor-color);
+            box-shadow:
+                0 0 12px var(--cursor-glow),
+                inset 0 0 12px var(--cursor-glow);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .cursor-ring-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--cursor-glow) 0%, transparent 70%);
+            opacity: 0.35;
+            animation: cursor-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes cursor-pulse {
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(0.85);
+                opacity: 0.3;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.15);
+                opacity: 0.6;
+            }
+        }
+
+        /* Crosshair lines */
+        .cursor-line {
+            position: absolute;
+            background: var(--cursor-color);
+            transition: background 0.3s ease;
+        }
+        .cursor-line-h {
+            width: 28px;
+            height: 1.5px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 6px var(--cursor-glow);
+        }
+        .cursor-line-v {
+            width: 1.5px;
+            height: 28px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 6px var(--cursor-glow);
+        }
+        /* Extensions beyond ring */
+        .cursor-line-h-ext {
+            position: absolute;
+            background: var(--cursor-color);
+            height: 1px;
+            width: 10px;
+            top: 50%;
+            box-shadow: 0 0 4px var(--cursor-glow);
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+        .cursor-line-h-ext.l {
+            left: -16px;
+            transform: translateY(-50%);
+        }
+        .cursor-line-h-ext.r {
+            right: -16px;
+            transform: translateY(-50%);
+        }
+        .cursor-line-v-ext {
+            position: absolute;
+            background: var(--cursor-color);
+            width: 1px;
+            height: 10px;
+            left: 50%;
+            box-shadow: 0 0 4px var(--cursor-glow);
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+        .cursor-line-v-ext.t {
+            top: -16px;
+            transform: translateX(-50%);
+        }
+        .cursor-line-v-ext.b {
+            bottom: -16px;
+            transform: translateX(-50%);
+        }
+
+        .cursor-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--cursor-color);
+            box-shadow: 0 0 12px var(--cursor-glow), 0 0 24px var(--cursor-glow);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Hover state (enlarged, brighter) */
+        #custom-cursor.hover .cursor-ring {
+            width: 54px;
+            height: 54px;
+            border-width: 2.2px;
+            box-shadow: 0 0 24px var(--cursor-glow), inset 0 0 24px var(--cursor-glow);
+        }
+        #custom-cursor.hover .cursor-dot {
+            width: 6px;
+            height: 6px;
+            box-shadow: 0 0 20px var(--cursor-glow), 0 0 40px var(--cursor-glow);
+        }
+        #custom-cursor.hover .cursor-line-h,
+        #custom-cursor.hover .cursor-line-v {
+            box-shadow: 0 0 12px var(--cursor-glow);
+        }
+        #custom-cursor.hover .cursor-line-h-ext,
+        #custom-cursor.hover .cursor-line-v-ext {
+            opacity: 0.9;
+        }
+        #custom-cursor.hover .cursor-ring-glow {
+            opacity: 0.6;
+            animation-duration: 1.2s;
+        }
+
+        /* Click burst on cursor */
+        .cursor-click-burst {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            border-radius: 50%;
+            border: 2px solid var(--cursor-color);
+            box-shadow: 0 0 30px var(--cursor-glow);
+            animation: cursor-burst 0.7s cubic-bezier(0.08, 0.82, 0.17, 1) forwards;
+        }
+        @keyframes cursor-burst {
+            0% {
+                transform: translate(-50%, -50%) scale(0.2);
+                opacity: 0.9;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(3);
+                opacity: 0;
+            }
+        }
+
+        /* Corner tick marks on ring (cyber aesthetic) */
+        .cursor-tick {
+            position: absolute;
+            background: var(--cursor-color);
+            transition: background 0.3s ease;
+        }
+        .cursor-tick-tl {
+            top: 2px;
+            left: 2px;
+            width: 6px;
+            height: 1.5px;
+            transform: rotate(45deg);
+            transform-origin: top left;
+        }
+        .cursor-tick-tr {
+            top: 2px;
+            right: 2px;
+            width: 6px;
+            height: 1.5px;
+            transform: rotate(-45deg);
+            transform-origin: top right;
+        }
+        .cursor-tick-bl {
+            bottom: 2px;
+            left: 2px;
+            width: 6px;
+            height: 1.5px;
+            transform: rotate(-45deg);
+            transform-origin: bottom left;
+        }
+        .cursor-tick-br {
+            bottom: 2px;
+            right: 2px;
+            width: 6px;
+            height: 1.5px;
+            transform: rotate(45deg);
+            transform-origin: bottom right;
+        }
+
+        /* ====================================================
+           SPIDER WEB CANVAS (full-page, pointer-events: none)
+        ==================================================== */
+        #web-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* Click ripple burst */
+        .click-burst {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 998;
+            animation: burst-anim 0.7s cubic-bezier(0.08, 0.82, 0.17, 1) forwards;
+        }
+        @keyframes burst-anim {
+            0% {
+                transform: scale(0);
+                opacity: 0.9;
+            }
+            100% {
+                transform: scale(3.5);
+                opacity: 0;
+            }
+        }
+
+        /* Floating data particles in hero */
+        #hero-canvas {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.45;
+        }
+
+        /* Glitch text on hover */
+        .glitch {
+            position: relative;
+            display: inline-block;
+        }
+        .glitch:hover {
+            animation: glitch-shake 0.5s linear;
+        }
+        @keyframes glitch-shake {
+            0%,
+            100% {
+                transform: translate(0);
+            }
+            20% {
+                transform: translate(-3px, 1px);
+            }
+            40% {
+                transform: translate(3px, -1px);
+            }
+            60% {
+                transform: translate(-2px, 2px);
+            }
+            80% {
+                transform: translate(2px, -2px);
+            }
+        }
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .glitch:hover::before {
+            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0.7;
+            clip-path: polygon(0 30%, 100% 30%, 100% 50%, 0 50%);
+            transform: translate(-3px, -1px);
+            animation: glitch-clip1 0.5s linear forwards;
+        }
+        .glitch:hover::after {
+            background: linear-gradient(135deg, var(--gradient-2), var(--gradient-1));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0.6;
+            clip-path: polygon(0 60%, 100% 60%, 100% 75%, 0 75%);
+            transform: translate(3px, 1px);
+            animation: glitch-clip2 0.5s linear forwards;
+        }
+        @keyframes glitch-clip1 {
+            0%,
+            100% {
+                clip-path: polygon(0 30%, 100% 30%, 100% 50%, 0 50%);
+            }
+            50% {
+                clip-path: polygon(0 10%, 100% 10%, 100% 35%, 0 35%);
+            }
+        }
+        @keyframes glitch-clip2 {
+            0%,
+            100% {
+                clip-path: polygon(0 60%, 100% 60%, 100% 75%, 0 75%);
+            }
+            50% {
+                clip-path: polygon(0 70%, 100% 70%, 100% 90%, 0 90%);
+            }
+        }
+
+        /* Scan-line overlay on cards */
+        .project-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            background: repeating-linear-gradient(to bottom,
+                    transparent,
+                    transparent 3px,
+                    rgba(255, 255, 255, 0.01) 3px,
+                    rgba(255, 255, 255, 0.01) 4px);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .project-card:hover::after {
+            opacity: 1;
+        }
+
+        /* Matrix rain text effect badge */
+        .matrix-badge {
+            font-family: 'Courier New', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            color: #22c55e;
+            opacity: 0.8;
         }
 
         /* ----- Scrollbar ----- */
@@ -82,7 +447,6 @@
             border-radius: 10px;
         }
 
-        /* ----- Container ----- */
         .container {
             max-width: 1100px;
             margin: 0 auto;
@@ -97,13 +461,12 @@
             width: 100%;
             padding: 0.8rem 0;
             background: var(--nav-bg);
-            backdrop-filter: blur(20px) saturate(1.4);
-            -webkit-backdrop-filter: blur(20px) saturate(1.4);
+            backdrop-filter: blur(24px) saturate(1.5);
+            -webkit-backdrop-filter: blur(24px) saturate(1.5);
             border-bottom: 1px solid var(--border);
             z-index: 1000;
             transition: background 0.3s ease;
         }
-
         .navbar .container {
             display: flex;
             justify-content: space-between;
@@ -117,6 +480,7 @@
             color: var(--accent);
             letter-spacing: -0.5px;
             position: relative;
+            cursor: none;
         }
         .logo::after {
             content: '';
@@ -138,7 +502,7 @@
             gap: 1rem;
         }
 
-        /* ----- Theme Toggle (Magic Button) ----- */
+        /* ----- Theme Toggle ----- */
         #theme-toggle {
             position: relative;
             width: 48px;
@@ -148,7 +512,7 @@
             background: var(--bg-card);
             color: var(--text-primary);
             font-size: 1.4rem;
-            cursor: pointer;
+            cursor: none;
             box-shadow: var(--shadow);
             transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             display: flex;
@@ -203,8 +567,6 @@
             position: relative;
             overflow: hidden;
         }
-
-        /* Floating particles (CSS only) */
         .hero::before {
             content: '';
             position: absolute;
@@ -212,8 +574,12 @@
             background:
                 radial-gradient(circle at 10% 20%, var(--accent-glow) 0%, transparent 50%),
                 radial-gradient(circle at 90% 80%, var(--accent-glow) 0%, transparent 50%);
-            opacity: 0.3;
+            opacity: 0.4;
             pointer-events: none;
+        }
+        .hero .container {
+            position: relative;
+            z-index: 1;
         }
 
         .hero-badge {
@@ -274,7 +640,6 @@
             margin: 0.5rem 0 2rem;
         }
 
-        /* Typewriter cursor */
         #typewriter {
             display: inline-block;
             border-right: 3px solid var(--accent);
@@ -291,7 +656,7 @@
             }
         }
 
-        /* ----- Social / CTA Buttons (Magic) ----- */
+        /* ----- Buttons ----- */
         .btn-group {
             display: flex;
             flex-wrap: wrap;
@@ -309,7 +674,7 @@
             font-weight: 600;
             font-size: 0.95rem;
             border: none;
-            cursor: pointer;
+            cursor: none;
             text-decoration: none;
             transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             overflow: hidden;
@@ -318,7 +683,6 @@
             box-shadow: var(--shadow);
             border: 1px solid var(--border);
         }
-
         .btn-primary {
             background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
             color: #fff;
@@ -329,7 +693,6 @@
             transform: translateY(-4px) scale(1.02);
             box-shadow: 0 12px 40px var(--accent-glow);
         }
-
         .btn-outline {
             background: transparent;
             border: 1.5px solid var(--border);
@@ -342,7 +705,6 @@
             box-shadow: 0 8px 30px var(--accent-glow);
         }
 
-        /* Ripple effect */
         .btn .ripple {
             position: absolute;
             border-radius: 50%;
@@ -358,11 +720,6 @@
             }
         }
 
-        /* Magnetic effect via JS */
-        .btn-magnetic {
-            transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
         .btn svg {
             width: 20px;
             height: 20px;
@@ -370,7 +727,7 @@
             flex-shrink: 0;
         }
 
-        /* ----- Section common ----- */
+        /* ----- Sections ----- */
         section {
             padding: 5rem 0;
             position: relative;
@@ -385,7 +742,6 @@
             color: var(--accent);
             margin-bottom: 0.5rem;
         }
-
         .section-title {
             font-family: 'Fira Code', monospace;
             font-size: clamp(1.8rem, 4vw, 2.8rem);
@@ -404,7 +760,6 @@
             background: linear-gradient(90deg, var(--gradient-1), var(--gradient-2));
             border-radius: 4px;
         }
-
         .section-desc {
             color: var(--text-secondary);
             max-width: 640px;
@@ -437,6 +792,28 @@
             text-align: center;
             transition: all 0.3s ease;
             box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent, var(--accent-glow), transparent 30%);
+            opacity: 0;
+            animation: spin-aura 4s linear infinite;
+            transition: opacity 0.3s;
+        }
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+        @keyframes spin-aura {
+            to {
+                transform: rotate(360deg);
+            }
         }
         .stat-card:hover {
             transform: translateY(-6px);
@@ -451,27 +828,30 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            position: relative;
+            z-index: 1;
         }
         .stat-label {
             font-size: 0.85rem;
             color: var(--text-muted);
             margin-top: 2px;
+            position: relative;
+            z-index: 1;
         }
 
-        @media (max-width: 768px) {
+        @media(max-width:768px) {
             .about-grid {
                 grid-template-columns: 1fr;
                 gap: 2rem;
             }
         }
 
-        /* ----- Skills (Animated Tags) ----- */
+        /* ----- Skills ----- */
         .skills-wrapper {
             display: flex;
             flex-wrap: wrap;
             gap: 0.8rem;
         }
-
         .skill-tag {
             position: relative;
             padding: 0.6rem 1.4rem;
@@ -482,7 +862,7 @@
             font-family: 'Fira Code', monospace;
             font-size: 0.85rem;
             font-weight: 500;
-            cursor: default;
+            cursor: none;
             transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             box-shadow: var(--shadow);
             overflow: hidden;
@@ -510,13 +890,12 @@
             opacity: 1;
         }
 
-        /* ----- Projects (3D Cards) ----- */
+        /* ----- Projects ----- */
         .projects-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
         }
-
         .project-card {
             position: relative;
             background: var(--bg-card);
@@ -526,7 +905,7 @@
             box-shadow: var(--shadow);
             transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             overflow: hidden;
-            cursor: default;
+            cursor: none;
             transform-style: preserve-3d;
             perspective: 800px;
         }
@@ -557,7 +936,6 @@
         .project-card:hover::before {
             opacity: 1;
         }
-
         .project-card:hover {
             transform: translateY(-10px) rotateX(2deg) rotateY(2deg);
             box-shadow: var(--shadow-hover);
@@ -593,6 +971,23 @@
             color: var(--text-muted);
             border: 1px solid var(--border);
             font-weight: 500;
+        }
+
+        /* Terminal prompt decoration */
+        .terminal-line {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .terminal-line .prompt {
+            color: #22c55e;
+        }
+        .terminal-line .cmd {
+            color: var(--accent);
         }
 
         /* ----- Education ----- */
@@ -656,7 +1051,7 @@
             }
         }
 
-        /* ----- Fade-in animations ----- */
+        /* ----- Fade-up ----- */
         .fade-up {
             opacity: 0;
             transform: translateY(40px);
@@ -667,8 +1062,30 @@
             transform: translateY(0);
         }
 
+        /* ----- Tooltip on click hint ----- */
+        .click-hint {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 0.5rem 1.1rem;
+            border-radius: 100px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            box-shadow: var(--shadow);
+            z-index: 900;
+            opacity: 1;
+            transition: opacity 1s ease;
+            pointer-events: none;
+        }
+        .click-hint.hidden {
+            opacity: 0;
+        }
+
         /* ----- Responsive ----- */
-        @media (max-width: 768px) {
+        @media(max-width:768px) {
             .hero {
                 padding: 100px 0 40px;
                 min-height: auto;
@@ -691,8 +1108,7 @@
                 font-size: 1.6rem;
             }
         }
-
-        @media (max-width: 480px) {
+        @media(max-width:480px) {
             .logo {
                 font-size: 1rem;
             }
@@ -710,16 +1126,39 @@
         }
     </style>
 </head>
-
 <body>
+
+    <!-- ===== CUSTOM CYBER CURSOR ===== -->
+    <div id="custom-cursor">
+        <div class="cursor-ring-glow"></div>
+        <div class="cursor-ring">
+            <div class="cursor-tick cursor-tick-tl"></div>
+            <div class="cursor-tick cursor-tick-tr"></div>
+            <div class="cursor-tick cursor-tick-bl"></div>
+            <div class="cursor-tick cursor-tick-br"></div>
+        </div>
+        <div class="cursor-line cursor-line-h"></div>
+        <div class="cursor-line cursor-line-v"></div>
+        <div class="cursor-line-h-ext l"></div>
+        <div class="cursor-line-h-ext r"></div>
+        <div class="cursor-line-v-ext t"></div>
+        <div class="cursor-line-v-ext b"></div>
+        <div class="cursor-dot"></div>
+    </div>
+
+    <!-- ===== Spider Web Canvas (global) ===== -->
+    <canvas id="web-canvas"></canvas>
 
     <!-- ===== Scroll Progress ===== -->
     <div id="scroll-progress"></div>
 
+    <!-- Click hint -->
+    <div class="click-hint" id="click-hint">⚡ Click anywhere to cast a web</div>
+
     <!-- ===== Navigation ===== -->
     <header class="navbar">
         <div class="container">
-            <a href="#" class="logo">&lt;GilbertSeb /&gt;</a>
+            <a href="#" class="logo glitch" data-text="&lt;GilbertSeb /&gt;">&lt;GilbertSeb /&gt;</a>
             <div class="nav-actions">
                 <button id="theme-toggle" aria-label="Toggle theme">🌙</button>
             </div>
@@ -731,10 +1170,12 @@
 
         <!-- ===== Hero ===== -->
         <section class="hero" id="home">
+            <canvas id="hero-canvas"></canvas>
             <div class="container">
                 <div class="hero-badge">
                     <span class="dot"></span>
-                    Open to opportunities
+                    <span class="matrix-badge" id="matrix-badge">SYS::ONLINE</span>
+                    &nbsp;Open to opportunities
                 </div>
 
                 <h1>
@@ -744,10 +1185,10 @@
 
                 <p class="subtitle">
                     <span id="typewriter">Cybersecurity Engineer</span>
-                    <span style="color: var(--text-muted); font-weight: 400;">&nbsp;· Forensics &amp; Offensive Security</span>
+                    <span style="color:var(--text-muted);font-weight:400;">&nbsp;· Forensics &amp; Offensive Security</span>
                 </p>
 
-                <p style="color: var(--text-secondary); max-width: 520px; margin-bottom: 2rem; font-size: 1.05rem;">
+                <p style="color:var(--text-secondary);max-width:520px;margin-bottom:2rem;font-size:1.05rem;">
                     I architect secure systems, hunt vulnerabilities, and build tools that make the digital world safer.
                 </p>
 
@@ -767,21 +1208,16 @@
         <!-- ===== About ===== -->
         <section id="about" class="fade-up">
             <div class="container">
+                <div class="terminal-line">
+                    <span class="prompt">❯</span>
+                    <span class="cmd">cat ./about.md</span>
+                </div>
                 <span class="section-label">About</span>
                 <h2 class="section-title">Who I Am</h2>
                 <div class="about-grid">
                     <div class="about-text">
-                        <p>
-                            I'm a Cybersecurity postgraduate with a Master of Technology in
-                            <strong>Cyber Forensics &amp; Information Security</strong>. My work sits at the
-                            intersection of offensive security and defensive strategy — from vulnerability
-                            assessment and malware analysis to designing resilient system architectures.
-                        </p>
-                        <p>
-                            I believe in building security into the fabric of systems, not bolting it on after.
-                            Whether it's reverse-engineering malware or developing secure communication
-                            protocols, I bring a hacker's curiosity and an engineer's discipline.
-                        </p>
+                        <p>I'm a Cybersecurity postgraduate with a Master of Technology in <strong>Cyber Forensics &amp; Information Security</strong>. My work sits at the intersection of offensive security and defensive strategy — from vulnerability assessment and malware analysis to designing resilient system architectures.</p>
+                        <p>I believe in building security into the fabric of systems, not bolting it on after. Whether it's reverse-engineering malware or developing secure communication protocols, I bring a hacker's curiosity and an engineer's discipline.</p>
                     </div>
                     <div class="about-stats">
                         <div class="stat-card">
@@ -808,12 +1244,13 @@
         <!-- ===== Skills ===== -->
         <section id="skills" class="fade-up">
             <div class="container">
+                <div class="terminal-line">
+                    <span class="prompt">❯</span>
+                    <span class="cmd">ls ./skills/</span>
+                </div>
                 <span class="section-label">Arsenal</span>
                 <h2 class="section-title">Tech &amp; Tools</h2>
-                <p class="section-desc">
-                    Every tool in my belt is sharpened for one purpose — securing systems and uncovering
-                    hidden threats.
-                </p>
+                <p class="section-desc">Every tool in my belt is sharpened for one purpose — securing systems and uncovering hidden threats.</p>
                 <div class="skills-wrapper">
                     <span class="skill-tag">Vulnerability Assessment</span>
                     <span class="skill-tag">Penetration Testing</span>
@@ -836,53 +1273,36 @@
         <!-- ===== Projects ===== -->
         <section id="projects" class="fade-up">
             <div class="container">
+                <div class="terminal-line">
+                    <span class="prompt">❯</span>
+                    <span class="cmd">ls ./projects/ --sort=impact</span>
+                </div>
                 <span class="section-label">Portfolio</span>
                 <h2 class="section-title">Featured Projects</h2>
-                <p class="section-desc">
-                    Each project reflects my commitment to building secure, intelligent systems that
-                    stand up to real-world threats.
-                </p>
+                <p class="section-desc">Each project reflects my commitment to building secure, intelligent systems that stand up to real-world threats.</p>
                 <div class="projects-grid">
-                    <!-- Card 1 -->
                     <div class="project-card" data-tilt>
                         <div class="project-icon">🛡️</div>
                         <h3>AI Vulnerability Scanner</h3>
-                        <p>
-                            Rule-based risk scoring engine with ML automation that identifies network
-                            weaknesses 40% faster than traditional tools.
-                        </p>
+                        <p>Rule-based risk scoring engine with ML automation that identifies network weaknesses 40% faster than traditional tools.</p>
                         <div class="project-tags">
-                            <span>Python</span>
-                            <span>ML</span>
-                            <span>Nmap</span>
+                            <span>Python</span><span>ML</span><span>Nmap</span>
                         </div>
                     </div>
-                    <!-- Card 2 -->
                     <div class="project-card" data-tilt>
                         <div class="project-icon">🧪</div>
                         <h3>Malware Behavior Lab</h3>
-                        <p>
-                            Secure sandbox environment for executing suspicious binaries with heuristic
-                            analysis to detect zero-day malware patterns.
-                        </p>
+                        <p>Secure sandbox environment for executing suspicious binaries with heuristic analysis to detect zero-day malware patterns.</p>
                         <div class="project-tags">
-                            <span>Cuckoo</span>
-                            <span>Python</span>
-                            <span>Reverse Eng</span>
+                            <span>Cuckoo</span><span>Python</span><span>Reverse Eng</span>
                         </div>
                     </div>
-                    <!-- Card 3 -->
                     <div class="project-card" data-tilt>
                         <div class="project-icon">🔐</div>
                         <h3>Secure Chat · AES-256</h3>
-                        <p>
-                            End-to-end encrypted messaging platform built with Python, demonstrating
-                            secure communication protocols and key exchange.
-                        </p>
+                        <p>End-to-end encrypted messaging platform built with Python, demonstrating secure communication protocols and key exchange.</p>
                         <div class="project-tags">
-                            <span>Python</span>
-                            <span>AES-256</span>
-                            <span>Socket</span>
+                            <span>Python</span><span>AES-256</span><span>Socket</span>
                         </div>
                     </div>
                 </div>
@@ -892,38 +1312,36 @@
         <!-- ===== Education ===== -->
         <section id="education" class="fade-up">
             <div class="container">
+                <div class="terminal-line">
+                    <span class="prompt">❯</span>
+                    <span class="cmd">cat ./credentials.json</span>
+                </div>
                 <span class="section-label">Education</span>
                 <h2 class="section-title">Academic Background</h2>
                 <div class="edu-card">
                     <h3>M.Tech – Cyber Forensics &amp; Information Security</h3>
                     <div class="meta">University of Technology · 2024 – 2026</div>
-                    <p>
-                        Specialized in digital forensics, incident response, cryptography, and secure
-                        software development. Thesis on AI-driven threat detection.
-                    </p>
+                    <p>Specialized in digital forensics, incident response, cryptography, and secure software development. Thesis on AI-driven threat detection.</p>
                 </div>
             </div>
         </section>
 
-        <!-- ===== Contact / CTA ===== -->
-        <section id="contact" class="fade-up" style="border-bottom: none;">
-            <div class="container" style="text-align: center;">
+        <!-- ===== Contact ===== -->
+        <section id="contact" class="fade-up" style="border-bottom:none;">
+            <div class="container" style="text-align:center;">
                 <span class="section-label">Connect</span>
-                <h2 class="section-title" style="display: inline-block;">Let's Secure Something</h2>
-                <p style="color: var(--text-secondary); max-width: 500px; margin: 1rem auto 2rem;">
-                    Have a project, a challenge, or just want to talk security? I'm always open to
-                    interesting conversations.
-                </p>
-                <div class="btn-group" style="justify-content: center;">
-                    <a href="mailto:gilbertseb100@gmail.com" class="btn btn-primary btn-magnetic" data-strength="20">
+                <h2 class="section-title" style="display:inline-block;">Let's Secure Something</h2>
+                <p style="color:var(--text-secondary);max-width:500px;margin:1rem auto 2rem;">Have a project, a challenge, or just want to talk security? I'm always open to interesting conversations.</p>
+                <div class="btn-group" style="justify-content:center;">
+                    <a href="mailto:yourmail@example.com" class="btn btn-primary btn-magnetic" data-strength="20">
                         <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
                         Email Me
                     </a>
-                    <a href="https://github.com/gilbert-seb" target="_blank" class="btn btn-outline btn-magnetic" data-strength="15">
+                    <a href="https://github.com/yourusername" target="_blank" class="btn btn-outline btn-magnetic" data-strength="15">
                         <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-1.016-.011-1.845-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0 0 22 12c0-5.523-4.477-10-10-10z"/></svg>
                         GitHub
                     </a>
-                    <a href="https://linkedin.com/in/Gilbert Seb" target="_blank" class="btn btn-outline btn-magnetic" data-strength="15">
+                    <a href="https://linkedin.com/in/yourprofile" target="_blank" class="btn btn-outline btn-magnetic" data-strength="15">
                         <svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
                         LinkedIn
                     </a>
@@ -933,211 +1351,646 @@
 
     </main>
 
-    <!-- ===== Footer ===== -->
     <footer>
         <div class="container">
-            <p>
-                &copy; 2026 Gilbert Seb &middot; Built with <span class="heart">❤</span> &amp; secure code
-            </p>
+            <p>&copy; 2026 Gilbert Seb &middot; Built with <span class="heart">❤</span> &amp; secure code</p>
         </div>
     </footer>
 
-    <!-- ===== JAVASCRIPT ===== -->
     <script>
-        // ============================================================
-        //  1. THEME TOGGLE
-        // ============================================================
+        // ====================================================
+        // HELPERS
+        // ====================================================
+        function getAccentRGB() {
+            const theme = document.documentElement.getAttribute('data-theme');
+            return theme === 'dark' ? [56, 189, 248] : [10, 140, 255];
+        }
+
+        // ====================================================
+        // 0. CUSTOM CYBER CURSOR
+        // ====================================================
+        const cursor = document.getElementById('custom-cursor');
+        let cursorX = -100,
+            cursorY = -100;
+        let targetX = -100,
+            targetY = -100;
+        let isHovering = false;
+        let cursorVisible = false;
+
+        // Track hoverable elements
+        const hoverables = 'a, button, .btn, .skill-tag, .project-card, .stat-card, .edu-card, .logo, #theme-toggle, .hero-badge';
+
+        function updateCursor() {
+            // Smooth lerp
+            const dx = targetX - cursorX;
+            const dy = targetY - cursorY;
+            const speed = 0.18;
+            cursorX += dx * speed;
+            cursorY += dy * speed;
+
+            if (cursorVisible) {
+                cursor.style.transform = `translate(${cursorX}px, ${cursorY}px)`;
+            }
+            requestAnimationFrame(updateCursor);
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            targetX = e.clientX;
+            targetY = e.clientY;
+            if (!cursorVisible) {
+                cursorVisible = true;
+                cursor.style.opacity = '1';
+            }
+
+            // Check hover
+            const el = document.elementFromPoint(e.clientX, e.clientY);
+            if (el && el.closest && el.closest(hoverables)) {
+                if (!isHovering) {
+                    isHovering = true;
+                    cursor.classList.add('hover');
+                }
+            } else {
+                if (isHovering) {
+                    isHovering = false;
+                    cursor.classList.remove('hover');
+                }
+            }
+        });
+
+        // Hide cursor when leaving window
+        document.addEventListener('mouseleave', () => {
+            cursorVisible = false;
+            cursor.style.opacity = '0';
+        });
+        document.addEventListener('mouseenter', () => {
+            cursorVisible = true;
+            cursor.style.opacity = '1';
+        });
+
+        // Click burst on cursor
+        document.addEventListener('click', (e) => {
+            // Only if not clicking on interactive elements (they handle their own)
+            if (e.target.closest('.navbar,.btn,.skill-tag,.project-card,.stat-card,.edu-card,#theme-toggle,.logo,.hero-badge'))
+                return;
+
+            const burst = document.createElement('div');
+            burst.className = 'cursor-click-burst';
+            const size = 30 + Math.random() * 20;
+            burst.style.cssText = `
+                    left:${e.clientX}px;
+                    top:${e.clientY}px;
+                    width:${size}px;
+                    height:${size}px;
+                `;
+            document.body.appendChild(burst);
+            setTimeout(() => burst.remove(), 800);
+        });
+
+        // Start cursor loop
+        updateCursor();
+
+        // Also update cursor color when theme changes
+        function updateCursorColors() {
+            const rgb = getAccentRGB();
+            const color = `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+            const glow = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.5)`;
+            document.documentElement.style.setProperty('--cursor-color', color);
+            document.documentElement.style.setProperty('--cursor-glow', glow);
+        }
+
+        // Monitor theme changes
+        const themeObserver = new MutationObserver(() => updateCursorColors());
+        themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+        updateCursorColors();
+
+        // ====================================================
+        // 1. THEME TOGGLE
+        // ====================================================
         const toggleBtn = document.getElementById('theme-toggle');
         const html = document.documentElement;
-
         const saved = localStorage.getItem('theme');
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
         if (saved === 'dark' || (!saved && prefersDark)) {
             html.setAttribute('data-theme', 'dark');
             toggleBtn.textContent = '☀️';
         } else {
             toggleBtn.textContent = '🌙';
         }
-
         toggleBtn.addEventListener('click', () => {
-            const current = html.getAttribute('data-theme');
-            const next = current === 'dark' ? 'light' : 'dark';
+            const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             html.setAttribute('data-theme', next);
             localStorage.setItem('theme', next);
             toggleBtn.textContent = next === 'dark' ? '☀️' : '🌙';
+            updateCursorColors();
         });
 
-        // ============================================================
-        //  2. SCROLL PROGRESS BAR
-        // ============================================================
+        // ====================================================
+        // 2. SCROLL PROGRESS
+        // ====================================================
         const progress = document.getElementById('scroll-progress');
         window.addEventListener('scroll', () => {
-            const scrollTop = window.scrollY;
-            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-            const pct = docHeight ? (scrollTop / docHeight) * 100 : 0;
+            const pct = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
             progress.style.width = pct + '%';
         });
 
-        // ============================================================
-        //  3. TYPEWRITER EFFECT
-        // ============================================================
+        // ====================================================
+        // 3. TYPEWRITER
+        // ====================================================
         const typewriterEl = document.getElementById('typewriter');
-        const words = [
-            'Cybersecurity Engineer',
-            'Forensics Specialist',
-            'Vulnerability Hunter',
-            'Secure Code Architect',
+        const words = ['Cybersecurity Engineer', 'Forensics Specialist', 'Vulnerability Hunter', 'Secure Code Architect',
             'Malware Analyst'
         ];
-        let wordIndex = 0;
-        let charIndex = 0;
-        let isDeleting = false;
-        let speed = 80;
+        let wIdx = 0,
+            cIdx = 0,
+            deleting = false,
+            spd = 80;
 
         function typeEffect() {
-            const currentWord = words[wordIndex];
-            if (isDeleting) {
-                typewriterEl.textContent = currentWord.substring(0, charIndex - 1);
-                charIndex--;
-                speed = 50;
-            } else {
-                typewriterEl.textContent = currentWord.substring(0, charIndex + 1);
-                charIndex++;
-                speed = 90;
-            }
-
-            if (!isDeleting && charIndex === currentWord.length) {
-                isDeleting = true;
-                speed = 1800; // pause before delete
-            } else if (isDeleting && charIndex === 0) {
-                isDeleting = false;
-                wordIndex = (wordIndex + 1) % words.length;
-                speed = 400;
-            }
-
-            setTimeout(typeEffect, speed);
+            const cur = words[wIdx];
+            typewriterEl.textContent = deleting ? cur.substring(0, cIdx - 1) : cur.substring(0, cIdx + 1);
+            deleting ? cIdx-- : cIdx++;
+            spd = deleting ? 50 : 90;
+            if (!deleting && cIdx === cur.length) { deleting = true;
+                spd = 1800; } else if (deleting && cIdx === 0) { deleting = false;
+                wIdx = (wIdx + 1) % words.length;
+                spd = 400; }
+            setTimeout(typeEffect, spd);
         }
         typeEffect();
 
-        // ============================================================
-        //  4. FADE-UP ON SCROLL (Intersection Observer)
-        // ============================================================
+        // ====================================================
+        // 4. MATRIX BADGE
+        // ====================================================
+        const mbadge = document.getElementById('matrix-badge');
+        const mbTexts = ['SYS::ONLINE', 'SEC::ACTIVE', 'SCAN::READY', 'NET::SECURE', 'DEF::ARMED'];
+        let mbIdx = 0;
+        setInterval(() => { mbIdx = (mbIdx + 1) % mbTexts.length;
+            mbadge.textContent = mbTexts[mbIdx]; }, 2200);
+
+        // ====================================================
+        // 5. FADE-UP OBSERVER
+        // ====================================================
         const fadeEls = document.querySelectorAll('.fade-up');
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+        const obs = new IntersectionObserver((ents) => { ents.forEach(e => { if (e.isIntersecting) e.target.classList.add(
+                    'visible'); }); }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+        fadeEls.forEach(el => obs.observe(el));
 
-        fadeEls.forEach(el => observer.observe(el));
-
-        // ============================================================
-        //  5. STAT COUNTER ANIMATION
-        // ============================================================
-        const statNumbers = document.querySelectorAll('.stat-number');
+        // ====================================================
+        // 6. STAT COUNTER
+        // ====================================================
+        const statNums = document.querySelectorAll('.stat-number');
         let counted = false;
-
-        const statObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting && !counted) {
+        const statObs = new IntersectionObserver((ents) => {
+            ents.forEach(e => {
+                if (e.isIntersecting && !counted) {
                     counted = true;
-                    statNumbers.forEach(el => {
-                        const target = parseInt(el.getAttribute('data-count'), 10);
-                        let current = 0;
-                        const step = Math.ceil(target / 40);
-                        const timer = setInterval(() => {
-                            current += step;
-                            if (current >= target) {
-                                el.textContent = target + (target === 100 ? '%' : '+');
-                                clearInterval(timer);
-                            } else {
-                                el.textContent = current + (target === 100 ? '%' : '+');
-                            }
+                    statNums.forEach(el => {
+                        const t = parseInt(el.getAttribute('data-count'), 10);
+                        let c = 0;
+                        const step = Math.ceil(t / 40);
+                        const tmr = setInterval(() => {
+                            c += step;
+                            if (c >= t) { el.textContent = t + (t === 100 ? '%' : '+');
+                                clearInterval(tmr); } else el.textContent = c + (t === 100 ? '%' :
+                                '+');
                         }, 30);
                     });
                 }
             });
         }, { threshold: 0.3 });
+        statNums.forEach(el => statObs.observe(el));
 
-        statNumbers.forEach(el => statObserver.observe(el));
-
-        // ============================================================
-        //  6. RIPPLE EFFECT ON BUTTONS
-        // ============================================================
+        // ====================================================
+        // 7. BUTTON RIPPLE
+        // ====================================================
         document.querySelectorAll('.btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 const rect = this.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                const ripple = document.createElement('span');
-                ripple.className = 'ripple';
-                const size = Math.max(rect.width, rect.height) * 0.6;
-                ripple.style.width = ripple.style.height = size + 'px';
-                ripple.style.left = (x - size / 2) + 'px';
-                ripple.style.top = (y - size / 2) + 'px';
-                this.appendChild(ripple);
-                setTimeout(() => ripple.remove(), 700);
+                const r = document.createElement('span');
+                r.className = 'ripple';
+                const sz = Math.max(rect.width, rect.height) * 0.6;
+                r.style.cssText =
+                    `width:${sz}px;height:${sz}px;left:${e.clientX-rect.left-sz/2}px;top:${e.clientY-rect.top-sz/2}px`;
+                this.appendChild(r);
+                setTimeout(() => r.remove(), 700);
             });
         });
 
-        // ============================================================
-        //  7. MAGNETIC BUTTON EFFECT
-        // ============================================================
+        // ====================================================
+        // 8. MAGNETIC BUTTONS
+        // ====================================================
         document.querySelectorAll('.btn-magnetic').forEach(btn => {
-            const strength = parseFloat(btn.getAttribute('data-strength')) || 15;
-
+            const str = parseFloat(btn.getAttribute('data-strength')) || 15;
             btn.addEventListener('mousemove', function(e) {
-                const rect = this.getBoundingClientRect();
-                const x = e.clientX - rect.left - rect.width / 2;
-                const y = e.clientY - rect.top - rect.height / 2;
-                const moveX = (x / rect.width) * strength;
-                const moveY = (y / rect.height) * strength;
-                this.style.transform = `translate(${moveX}px, ${moveY}px) scale(1.02)`;
+                const r = this.getBoundingClientRect();
+                const x = (e.clientX - r.left - r.width / 2) / r.width * str;
+                const y = (e.clientY - r.top - r.height / 2) / r.height * str;
+                this.style.transform = `translate(${x}px,${y}px) scale(1.02)`;
             });
-
-            btn.addEventListener('mouseleave', function() {
-                this.style.transform = 'translate(0, 0) scale(1)';
-            });
+            btn.addEventListener('mouseleave', function() { this.style.transform = ''; });
         });
 
-        // ============================================================
-        //  8. 3D TILT ON PROJECT CARDS
-        // ============================================================
+        // ====================================================
+        // 9. 3D TILT ON CARDS
+        // ====================================================
         document.querySelectorAll('.project-card[data-tilt]').forEach(card => {
             card.addEventListener('mousemove', function(e) {
-                const rect = this.getBoundingClientRect();
-                const x = (e.clientX - rect.left) / rect.width - 0.5;
-                const y = (e.clientY - rect.top) / rect.height - 0.5;
-                const rotateX = y * -8;
-                const rotateY = x * 8;
-                this.style.transform =
-                    `translateY(-10px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                const r = this.getBoundingClientRect();
+                const x = (e.clientX - r.left) / r.width - .5;
+                const y = (e.clientY - r.top) / r.height - .5;
+                this.style.transform = `translateY(-10px) rotateX(${y*-10}deg) rotateY(${x*10}deg)`;
             });
+            card.addEventListener('mouseleave', function() { this.style.transform = ''; });
+        });
 
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) rotateX(0) rotateY(0)';
+        // ====================================================
+        // 10. SMOOTH ANCHOR SCROLL
+        // ====================================================
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', function(e) {
+                const t = document.querySelector(this.getAttribute('href'));
+                if (t) { e.preventDefault();
+                    t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
             });
         });
 
-        // ============================================================
-        //  9. SMOOTH ANCHOR SCROLL
-        // ============================================================
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function(e) {
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    e.preventDefault();
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // ====================================================
+        // 11. HERO FLOATING PARTICLES (canvas)
+        // ====================================================
+        (function() {
+            const canvas = document.getElementById('hero-canvas');
+            const section = document.querySelector('.hero');
+
+            function resize() { canvas.width = section.offsetWidth;
+                canvas.height = section.offsetHeight; }
+            resize();
+            window.addEventListener('resize', resize);
+            const ctx = canvas.getContext('2d');
+            const N = 60;
+            const pts = Array.from({ length: N }, () => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - .5) * 0.4,
+                vy: (Math.random() - .5) * 0.4,
+                r: Math.random() * 2 + 1
+            }));
+
+            function drawHero() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const [r, g, b] = getAccentRGB();
+                pts.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${r},${g},${b},0.7)`;
+                    ctx.fill();
+                });
+                pts.forEach((a, i) => {
+                    pts.slice(i + 1).forEach(b => {
+                        const d = Math.hypot(a.x - b.x, a.y - b.y);
+                        if (d < 100) {
+                            ctx.beginPath();
+                            ctx.moveTo(a.x, a.y);
+                            ctx.lineTo(b.x, b.y);
+                            ctx.strokeStyle = `rgba(${r},${g},${b},${(1-d/100)*0.25})`;
+                            ctx.lineWidth = 0.8;
+                            ctx.stroke();
+                        }
+                    });
+                });
+                requestAnimationFrame(drawHero);
+            }
+            drawHero();
+        })();
+
+        // ====================================================
+        // 12. GLOBAL SPIDER WEB / CLICK NETWORK ANIMATION
+        // ====================================================
+        (function() {
+            const canvas = document.getElementById('web-canvas');
+            const ctx = canvas.getContext('2d');
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            const webs = [];
+            const MAX_WEBS = 8;
+
+            const ambientNodes = [];
+            const AMBIENT_N = 55;
+            for (let i = 0; i < AMBIENT_N; i++) {
+                ambientNodes.push({
+                    x: Math.random() * window.innerWidth,
+                    y: Math.random() * window.innerHeight,
+                    vx: (Math.random() - .5) * 0.35,
+                    vy: (Math.random() - .5) * 0.35,
+                    r: Math.random() * 2 + 1,
+                    opacity: Math.random() * 0.5 + 0.2
+                });
+            }
+
+            let mouse = { x: -9999, y: -9999 };
+            window.addEventListener('mousemove', e => { mouse.x = e.clientX;
+                mouse.y = e.clientY; });
+
+            class WebNode {
+                constructor(x, y, angle, depth, maxDepth, parent) {
+                    this.x0 = parent ? parent.cx : x;
+                    this.y0 = parent ? parent.cy : y;
+                    this.cx = x;
+                    this.cy = y;
+                    this.angle = angle;
+                    this.depth = depth;
+                    this.maxDepth = maxDepth;
+                    this.progress = 0;
+                    this.speed = 0.04 + Math.random() * 0.03;
+                    this.children = [];
+                    this.pulse = 0;
+                    this.done = false;
+                    this.wx = (Math.random() - .5) * 30;
+                    this.wy = (Math.random() - .5) * 30;
                 }
+                update() {
+                    if (this.progress < 1) {
+                        this.progress = Math.min(1, this.progress + this.speed);
+                    } else {
+                        this.done = true;
+                    }
+                    this.pulse = (this.pulse + 0.06) % (Math.PI * 2);
+                }
+                draw(ctx, [r, g, b], now) {
+                    const t = this.progress;
+                    const ex = this.x0 + (this.cx + this.wx - this.x0) * t;
+                    const ey = this.y0 + (this.cy + this.wy - this.y0) * t;
+                    const alpha = Math.max(0, (1 - this.depth / this.maxDepth) * 0.75 + 0.1);
+                    ctx.beginPath();
+                    ctx.moveTo(this.x0, this.y0);
+                    const mx = (this.x0 + ex) / 2 + this.wy * 0.4;
+                    const my = (this.y0 + ey) / 2 + this.wx * 0.4;
+                    ctx.quadraticCurveTo(mx, my, ex, ey);
+                    ctx.strokeStyle = `rgba(${r},${g},${b},${alpha*0.7})`;
+                    ctx.lineWidth = Math.max(0.4, 1.2 - this.depth * 0.22);
+                    ctx.stroke();
+                    if (t === 1) {
+                        const glow = Math.sin(this.pulse) * 0.3 + 0.7;
+                        const nr = Math.max(0.8, 2.5 - this.depth * 0.4);
+                        ctx.beginPath();
+                        ctx.arc(this.cx + this.wx, this.cy + this.wy, nr, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(${r},${g},${b},${alpha*glow})`;
+                        ctx.fill();
+                        ctx.beginPath();
+                        ctx.arc(this.cx + this.wx, this.cy + this.wy, nr + 2, 0, Math.PI * 2);
+                        ctx.strokeStyle = `rgba(${r},${g},${b},${alpha*glow*0.4})`;
+                        ctx.lineWidth = 0.6;
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            class SpiderWeb {
+                constructor(ox, oy) {
+                    this.ox = ox;
+                    this.oy = oy;
+                    this.alive = true;
+                    this.age = 0;
+                    this.maxAge = 380 + Math.random() * 200;
+                    this.fadeStart = this.maxAge - 80;
+                    this.opacity = 0;
+                    this.nodes = [];
+                    this.buildTree();
+                }
+                buildTree() {
+                    const THREADS = 6 + Math.floor(Math.random() * 4);
+                    const MAX_DEPTH = 4;
+                    const BASE_LEN = 80 + Math.random() * 60;
+                    for (let i = 0; i < THREADS; i++) {
+                        const angle = (Math.PI * 2 / THREADS) * i + (Math.random() - .5) * 0.3;
+                        this._branch(this.ox, this.oy, angle, 1, MAX_DEPTH, BASE_LEN, null);
+                    }
+                }
+                _branch(x, y, angle, depth, maxDepth, len, parent) {
+                    if (depth > maxDepth) return;
+                    const spread = 0.85 - depth * 0.05;
+                    const nx = x + Math.cos(angle) * len * spread;
+                    const ny = y + Math.sin(angle) * len * spread;
+                    const node = new WebNode(nx, ny, angle, depth, maxDepth, parent ? parent : null);
+                    if (!parent) { node.x0 = x;
+                        node.y0 = y; }
+                    this.nodes.push(node);
+                    const nBranches = depth < 2 ? 2 : 1;
+                    const branchAngle = 0.35 + Math.random() * 0.25;
+                    for (let i = 0; i < nBranches; i++) {
+                        const dir = (i === 0 ? 1 : -1);
+                        this._branch(nx, ny, angle + dir * branchAngle, depth + 1, maxDepth, len * (0.6 + Math.random() *
+                            0.15), node);
+                    }
+                }
+                update() {
+                    this.age++;
+                    this.opacity = this.age < 20 ? this.age / 20 : (this.age > this.fadeStart ? 1 - (this.age - this
+                        .fadeStart) / 80 : 1);
+                    this.nodes.forEach(n => n.update());
+                    if (this.age > this.maxAge) this.alive = false;
+                }
+                draw(ctx, rgb) {
+                    ctx.save();
+                    ctx.globalAlpha = Math.max(0, this.opacity);
+                    this.nodes.forEach(n => n.draw(ctx, rgb, this.age));
+                    this._drawConcentric(ctx, rgb);
+                    ctx.restore();
+                }
+                _drawConcentric(ctx, [r, g, b]) {
+                    const byDepth = {};
+                    this.nodes.forEach(n => {
+                        if (n.done) {
+                            if (!byDepth[n.depth]) byDepth[n.depth] = [];
+                            byDepth[n.depth].push(n);
+                        }
+                    });
+                    Object.entries(byDepth).forEach(([d, nodes]) => {
+                        if (nodes.length < 2) return;
+                        const alpha = (1 - parseInt(d) / 6) * 0.25;
+                        if (alpha <= 0) return;
+                        nodes.forEach((a, i) => {
+                            const b = nodes[(i + 1) % nodes.length];
+                            const ax = a.cx + a.wx,
+                                ay = a.cy + a.wy;
+                            const bx = b.cx + b.wx,
+                                by = b.cy + b.wy;
+                            const dist = Math.hypot(ax - bx, ay - by);
+                            if (dist < 260) {
+                                ctx.beginPath();
+                                ctx.moveTo(ax, ay);
+                                const mx = (ax + bx) / 2 + (ay - by) * 0.05;
+                                const my = (ay + by) / 2 + (bx - ax) * 0.05;
+                                ctx.quadraticCurveTo(mx, my, bx, by);
+                                ctx.strokeStyle = `rgba(${r},${g},${b},${alpha})`;
+                                ctx.lineWidth = 0.5;
+                                ctx.setLineDash([3, 5]);
+                                ctx.stroke();
+                                ctx.setLineDash([]);
+                            }
+                        });
+                    });
+                }
+            }
+
+            const bursts = [];
+            class ClickBurst {
+                constructor(x, y) { this.x = x;
+                    this.y = y;
+                    this.r = 0;
+                    this.maxR = 120;
+                    this.alpha = 0.9;
+                    this.alive = true; }
+                update() { this.r += 6;
+                    this.alpha -= 0.06; if (this.alpha <= 0) this.alive = false; }
+                draw(ctx, [r, g, b]) {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                    ctx.strokeStyle = `rgba(${r},${g},${b},${Math.max(0,this.alpha)})`;
+                    ctx.lineWidth = 2.5;
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.r * 0.55, 0, Math.PI * 2);
+                    ctx.strokeStyle = `rgba(${r},${g},${b},${Math.max(0,this.alpha*0.5)})`;
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
+
+            const sparks = [];
+            class Spark {
+                constructor(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    const a = Math.random() * Math.PI * 2;
+                    const spd = 2 + Math.random() * 4;
+                    this.vx = Math.cos(a) * spd;
+                    this.vy = Math.sin(a) * spd;
+                    this.life = 1;
+                    this.decay = 0.03 + Math.random() * 0.03;
+                    this.r = 1.5 + Math.random() * 2;
+                    this.alive = true;
+                }
+                update() { this.x += this.vx;
+                    this.y += this.vy;
+                    this.vy += 0.08;
+                    this.life -= this.decay; if (this.life <= 0) this.alive = false; }
+                draw(ctx, [r, g, b]) { ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${r},${g},${b},${Math.max(0,this.life)})`;
+                    ctx.fill(); }
+            }
+
+            window.addEventListener('click', e => {
+                if (e.target.closest('.navbar,.btn')) return;
+                const x = e.clientX,
+                    y = e.clientY;
+                document.getElementById('click-hint').classList.add('hidden');
+                if (webs.length >= MAX_WEBS) webs.shift();
+                webs.push(new SpiderWeb(x, y));
+                bursts.push(new ClickBurst(x, y));
+                bursts.push(new ClickBurst(x, y));
+                bursts[bursts.length - 1].r = 20;
+                for (let i = 0; i < 18; i++) sparks.push(new Spark(x, y));
+            });
+
+            function render() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const rgb = getAccentRGB();
+
+                ambientNodes.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                    const dx = p.x - mouse.x,
+                        dy = p.y - mouse.y;
+                    const dist = Math.hypot(dx, dy);
+                    if (dist < 90) { const f = ((90 - dist) / 90) * 0.6;
+                        p.vx += dx / dist * f;
+                        p.vy += dy / dist * f; }
+                    const spd = Math.hypot(p.vx, p.vy);
+                    if (spd > 1.2) { p.vx /= spd / 1.2;
+                        p.vy /= spd / 1.2; }
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${p.opacity*0.6})`;
+                    ctx.fill();
+                });
+
+                for (let i = 0; i < ambientNodes.length; i++) {
+                    for (let j = i + 1; j < ambientNodes.length; j++) {
+                        const a = ambientNodes[i],
+                            b = ambientNodes[j];
+                        const d = Math.hypot(a.x - b.x, a.y - b.y);
+                        if (d < 90) {
+                            ctx.beginPath();
+                            ctx.moveTo(a.x, a.y);
+                            ctx.lineTo(b.x, b.y);
+                            ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${(1-d/90)*0.13})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.stroke();
+                        }
+                    }
+                }
+
+                for (let i = webs.length - 1; i >= 0; i--) {
+                    webs[i].update();
+                    webs[i].draw(ctx, rgb);
+                    if (!webs[i].alive) webs.splice(i, 1);
+                }
+
+                for (let i = bursts.length - 1; i >= 0; i--) {
+                    bursts[i].update();
+                    bursts[i].draw(ctx, rgb);
+                    if (!bursts[i].alive) bursts.splice(i, 1);
+                }
+
+                for (let i = sparks.length - 1; i >= 0; i--) {
+                    sparks[i].update();
+                    sparks[i].draw(ctx, rgb);
+                    if (!sparks[i].alive) sparks.splice(i, 1);
+                }
+
+                requestAnimationFrame(render);
+            }
+            render();
+
+            setTimeout(() => document.getElementById('click-hint').classList.add('hidden'), 4000);
+        })();
+
+        // ====================================================
+        // 13. SKILL TAG CLICK → mini burst
+        // ====================================================
+        document.querySelectorAll('.skill-tag').forEach(tag => {
+            tag.addEventListener('click', function(e) {
+                const burst = document.createElement('div');
+                burst.className = 'click-burst';
+                const size = 50;
+                burst.style.cssText = `
+                        left:${e.clientX-size/2}px;
+                        top:${e.clientY-size/2}px;
+                        width:${size}px;height:${size}px;
+                        background:radial-gradient(circle,var(--accent-glow),transparent);
+                        border:1.5px solid var(--accent);
+                    `;
+                document.body.appendChild(burst);
+                setTimeout(() => burst.remove(), 800);
             });
         });
 
-        console.log('🔒 Gilbert Seb · Cybersecurity Portfolio');
-        console.log('💡 Built with ❤️ and secure code.');
+        console.log('%c🔒 Gilbert Seb · Cybersecurity Portfolio', 'color:#38bdf8;font-family:monospace;font-size:14px;font-weight:bold');
+        console.log('%c💡 Click anywhere to cast a spider web!', 'color:#6c3ce0;font-family:monospace;font-size:11px');
+        console.log('%c🎯 Custom cyber cursor active — reticle targeting engaged', 'color:#22c55e;font-family:monospace;font-size:11px');
     </script>
-
 </body>
 </html>
