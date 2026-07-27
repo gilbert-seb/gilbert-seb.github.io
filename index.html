@@ -1608,41 +1608,54 @@
         });
 
         // ============================================================
-        // 10. HERO FLOATING PARTICLES
+        // 10. HERO FLOATING PARTICLES (optimized with delta time)
         // ============================================================
         (function() {
             const canvas = document.getElementById('hero-canvas');
             const section = document.querySelector('.hero');
+            let w, h;
 
-            function resize() { canvas.width = section.offsetWidth;
-                canvas.height = section.offsetHeight; }
+            function resize() { w = canvas.width = section.offsetWidth;
+                h = canvas.height = section.offsetHeight; }
             resize();
             window.addEventListener('resize', resize);
             const ctx = canvas.getContext('2d');
-            const N = 60;
-            const pts = Array.from({ length: N }, () => ({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
+
+            // reduce particle count on mobile for performance
+            const particleCount = isTouch ? 30 : 60;
+            const pts = Array.from({ length: particleCount }, () => ({
+                x: Math.random() * w,
+                y: Math.random() * h,
                 vx: (Math.random() - .5) * 0.4,
                 vy: (Math.random() - .5) * 0.4,
                 r: Math.random() * 2 + 1
             }));
 
-            function drawHero() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            let lastTime = performance.now();
+
+            function drawHero(now) {
+                const dt = Math.min((now - lastTime) / 16.67, 2); // normalize to ~60fps
+                lastTime = now;
+
+                ctx.clearRect(0, 0, w, h);
                 const [r, g, b] = getAccentRGB();
+
                 pts.forEach(p => {
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-                    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                    p.x += p.vx * dt;
+                    p.y += p.vy * dt;
+                    if (p.x < 0 || p.x > w) p.vx *= -1;
+                    if (p.y < 0 || p.y > h) p.vy *= -1;
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
                     ctx.fillStyle = `rgba(${r},${g},${b},0.7)`;
                     ctx.fill();
                 });
-                pts.forEach((a, i) => {
-                    pts.slice(i + 1).forEach(b => {
+
+                // connections
+                for (let i = 0; i < pts.length; i++) {
+                    for (let j = i + 1; j < pts.length; j++) {
+                        const a = pts[i],
+                            b = pts[j];
                         const d = Math.hypot(a.x - b.x, a.y - b.y);
                         if (d < 100) {
                             ctx.beginPath();
@@ -1652,15 +1665,15 @@
                             ctx.lineWidth = 0.8;
                             ctx.stroke();
                         }
-                    });
-                });
+                    }
+                }
                 requestAnimationFrame(drawHero);
             }
-            drawHero();
+            requestAnimationFrame(drawHero);
         })();
 
         // ============================================================
-        // 11. SPIDER WEB ENGINE (scroll-triggered on touch, click on desktop)
+        // 11. SPIDER WEB ENGINE (delta‑time driven for smooth 90fps feel)
         // ============================================================
         (function() {
             const canvas = document.getElementById('web-canvas');
@@ -1676,9 +1689,10 @@
             const webs = [];
             const MAX_WEBS = 8;
 
+            // ambient particles - reduce on mobile
+            const ambientCount = isTouch ? 30 : 55;
             const ambientNodes = [];
-            const AMBIENT_N = 55;
-            for (let i = 0; i < AMBIENT_N; i++) {
+            for (let i = 0; i < ambientCount; i++) {
                 ambientNodes.push({
                     x: Math.random() * window.innerWidth,
                     y: Math.random() * window.innerHeight,
@@ -1694,7 +1708,6 @@
                 window.addEventListener('mousemove', e => { mouse.x = e.clientX;
                     mouse.y = e.clientY; });
             } else {
-                // on touch, use last touch position
                 window.addEventListener('touchmove', e => {
                     const t = e.touches[0];
                     if (t) { mouse.x = t.clientX;
@@ -1707,6 +1720,7 @@
                 }, { passive: true });
             }
 
+            // ---- WebNode with delta-time progress ----
             class WebNode {
                 constructor(x, y, angle, depth, maxDepth, parent) {
                     this.x0 = parent ? parent.cx : x;
@@ -1716,23 +1730,22 @@
                     this.angle = angle;
                     this.depth = depth;
                     this.maxDepth = maxDepth;
-                    this.progress = 0;
-                    this.speed = 0.04 + Math.random() * 0.03;
-                    this.children = [];
+                    this.progress = 0; // 0→1
+                    this.speed = 0.04 + Math.random() * 0.03; // per frame at 60fps
                     this.pulse = 0;
                     this.done = false;
                     this.wx = (Math.random() - .5) * 30;
                     this.wy = (Math.random() - .5) * 30;
                 }
-                update() {
+                update(dt) {
                     if (this.progress < 1) {
-                        this.progress = Math.min(1, this.progress + this.speed);
+                        this.progress = Math.min(1, this.progress + this.speed * dt);
                     } else {
                         this.done = true;
                     }
-                    this.pulse = (this.pulse + 0.06) % (Math.PI * 2);
+                    this.pulse = (this.pulse + 0.06 * dt) % (Math.PI * 2);
                 }
-                draw(ctx, [r, g, b], now) {
+                draw(ctx, [r, g, b]) {
                     const t = this.progress;
                     const ex = this.x0 + (this.cx + this.wx - this.x0) * t;
                     const ey = this.y0 + (this.cy + this.wy - this.y0) * t;
@@ -1799,17 +1812,17 @@
                             0.15), node);
                     }
                 }
-                update() {
-                    this.age++;
+                update(dt) {
+                    this.age += dt;
                     this.opacity = this.age < 20 ? this.age / 20 : (this.age > this.fadeStart ? 1 - (this.age - this
                         .fadeStart) / 80 : 1);
-                    this.nodes.forEach(n => n.update());
+                    this.nodes.forEach(n => n.update(dt));
                     if (this.age > this.maxAge) this.alive = false;
                 }
                 draw(ctx, rgb) {
                     ctx.save();
                     ctx.globalAlpha = Math.max(0, this.opacity);
-                    this.nodes.forEach(n => n.draw(ctx, rgb, this.age));
+                    this.nodes.forEach(n => n.draw(ctx, rgb));
                     this._drawConcentric(ctx, rgb);
                     ctx.restore();
                 }
@@ -1849,15 +1862,14 @@
                 }
             }
 
-            // ---- spawn a web at given coordinates ----
+            // ---- spawn web ----
             function spawnWeb(x, y) {
                 if (webs.length >= MAX_WEBS) webs.shift();
                 webs.push(new SpiderWeb(x, y));
-                // burst ring
                 bursts.push(new ClickBurst(x, y));
                 bursts.push(new ClickBurst(x, y));
                 bursts[bursts.length - 1].r = 20;
-                for (let i = 0; i < 12; i++) sparks.push(new Spark(x, y));
+                for (let i = 0; i < (isTouch ? 8 : 12); i++) sparks.push(new Spark(x, y));
             }
 
             // ---- bursts & sparks ----
@@ -1869,8 +1881,8 @@
                     this.maxR = 120;
                     this.alpha = 0.9;
                     this.alive = true; }
-                update() { this.r += 6;
-                    this.alpha -= 0.06; if (this.alpha <= 0) this.alive = false; }
+                update(dt) { this.r += 6 * dt;
+                    this.alpha -= 0.06 * dt; if (this.alpha <= 0) this.alive = false; }
                 draw(ctx, [r, g, b]) {
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
@@ -1899,14 +1911,19 @@
                     this.r = 1.5 + Math.random() * 2;
                     this.alive = true;
                 }
-                update() { this.x += this.vx;
-                    this.y += this.vy;
-                    this.vy += 0.08;
-                    this.life -= this.decay; if (this.life <= 0) this.alive = false; }
-                draw(ctx, [r, g, b]) { ctx.beginPath();
+                update(dt) {
+                    this.x += this.vx * dt;
+                    this.y += this.vy * dt;
+                    this.vy += 0.08 * dt;
+                    this.life -= this.decay * dt;
+                    if (this.life <= 0) this.alive = false;
+                }
+                draw(ctx, [r, g, b]) {
+                    ctx.beginPath();
                     ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
                     ctx.fillStyle = `rgba(${r},${g},${b},${Math.max(0,this.life)})`;
-                    ctx.fill(); }
+                    ctx.fill();
+                }
             }
 
             // ---- TRIGGER: touch → scroll, desktop → click ----
@@ -1914,18 +1931,16 @@
 
             function handleScrollTrigger() {
                 if (isTouch) {
-                    const now = Date.now();
-                    if (now - scrollCooldown < 300) return; // throttle
+                    const now = performance.now();
+                    if (now - scrollCooldown < 300) return;
                     scrollCooldown = now;
                     const x = Math.random() * window.innerWidth;
                     const y = Math.random() * window.innerHeight;
                     spawnWeb(x, y);
-                    // also show a hint that web appeared
                 }
             }
 
             if (isTouch) {
-                // on touch devices: scroll triggers webs
                 let lastScrollY = window.scrollY;
                 window.addEventListener('scroll', () => {
                     const currentScrollY = window.scrollY;
@@ -1935,10 +1950,9 @@
                     }
                 }, { passive: true });
 
-                // also trigger on touch start at random positions for more fun
                 let touchWebCooldown = 0;
                 window.addEventListener('touchstart', (e) => {
-                    const now = Date.now();
+                    const now = performance.now();
                     if (now - touchWebCooldown < 400) return;
                     touchWebCooldown = now;
                     const t = e.touches[0];
@@ -1949,19 +1963,14 @@
                     }
                 }, { passive: true });
 
-                // initial web on load
                 setTimeout(() => {
                     spawnWeb(window.innerWidth * 0.3, window.innerHeight * 0.4);
                     setTimeout(() => {
                         spawnWeb(window.innerWidth * 0.7, window.innerHeight * 0.6);
                     }, 400);
                 }, 600);
-
-                // hide click hint on touch
                 document.getElementById('click-hint').classList.add('hidden');
-
             } else {
-                // desktop: click triggers webs
                 window.addEventListener('click', (e) => {
                     if (e.target.closest('.navbar,.btn,.skill-tag,.project-card,.stat-card,.edu-card,#theme-toggle,.logo,.hero-badge'))
                         return;
@@ -1969,32 +1978,35 @@
                     spawnWeb(e.clientX, e.clientY);
                 });
 
-                // also trigger on scroll with lower intensity
                 let desktopScrollCooldown = 0;
                 window.addEventListener('scroll', () => {
-                    const now = Date.now();
+                    const now = performance.now();
                     if (now - desktopScrollCooldown < 600) return;
                     desktopScrollCooldown = now;
-                    // only if user scrolled significantly
                     const x = Math.random() * window.innerWidth;
                     const y = Math.random() * window.innerHeight;
                     spawnWeb(x, y);
                 }, { passive: true });
 
-                // initial web on load
                 setTimeout(() => {
                     spawnWeb(window.innerWidth * 0.5, window.innerHeight * 0.5);
                 }, 800);
             }
 
-            // ---- render loop ----
-            function render() {
+            // ---- render loop with delta time ----
+            let lastFrameTime = performance.now();
+
+            function render(now) {
+                const dt = Math.min((now - lastFrameTime) / 16.67, 2); // normalize
+                lastFrameTime = now;
+
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 const rgb = getAccentRGB();
 
+                // ambient nodes
                 ambientNodes.forEach(p => {
-                    p.x += p.vx;
-                    p.y += p.vy;
+                    p.x += p.vx * dt;
+                    p.y += p.vy * dt;
                     if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
                     if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
                     const dx = p.x - mouse.x,
@@ -2012,6 +2024,7 @@
                     ctx.fill();
                 });
 
+                // ambient connections
                 for (let i = 0; i < ambientNodes.length; i++) {
                     for (let j = i + 1; j < ambientNodes.length; j++) {
                         const a = ambientNodes[i],
@@ -2028,29 +2041,31 @@
                     }
                 }
 
+                // webs
                 for (let i = webs.length - 1; i >= 0; i--) {
-                    webs[i].update();
+                    webs[i].update(dt);
                     webs[i].draw(ctx, rgb);
                     if (!webs[i].alive) webs.splice(i, 1);
                 }
 
+                // bursts
                 for (let i = bursts.length - 1; i >= 0; i--) {
-                    bursts[i].update();
+                    bursts[i].update(dt);
                     bursts[i].draw(ctx, rgb);
                     if (!bursts[i].alive) bursts.splice(i, 1);
                 }
 
+                // sparks
                 for (let i = sparks.length - 1; i >= 0; i--) {
-                    sparks[i].update();
+                    sparks[i].update(dt);
                     sparks[i].draw(ctx, rgb);
                     if (!sparks[i].alive) sparks.splice(i, 1);
                 }
 
                 requestAnimationFrame(render);
             }
-            render();
+            requestAnimationFrame(render);
 
-            // hide hint after 4 sec on desktop
             if (!isTouch) {
                 setTimeout(() => document.getElementById('click-hint').classList.add('hidden'), 4000);
             }
@@ -2073,9 +2088,11 @@
 
         console.log('%c🔒 Gilbert Seb · Cybersecurity Portfolio', 'color:#38bdf8;font-family:monospace;font-size:14px;font-weight:bold');
         if (isTouch) {
-            console.log('%c📱 Touch device detected · Spider webs appear on scroll!', 'color:#22c55e;font-family:monospace;font-size:11px');
+            console.log('%c📱 Touch device · Spider webs appear on scroll & tap (smooth 90fps)',
+                'color:#22c55e;font-family:monospace;font-size:11px');
         } else {
-            console.log('%c🖱️ Desktop · Click or scroll to cast spider webs!', 'color:#22c55e;font-family:monospace;font-size:11px');
+            console.log('%c🖱️ Desktop · Click or scroll to cast spider webs (smooth 90fps)',
+                'color:#22c55e;font-family:monospace;font-size:11px');
         }
     </script>
 </body>
